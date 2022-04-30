@@ -1,6 +1,9 @@
 package com.cos.security1.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -79,6 +82,30 @@ public class IndexController {
 		return "joinForm";
 	}
 
+	
+	/**
+	 * 아래 함수는 admin만 접근 가능
+	 * 
+	 * */
+	@Secured("ROLE_ADMIN")
+	@GetMapping("/info")
+	public @ResponseBody String info() {
+		return "개인정보";
+	}
+	
+	
+	/**PreAuthorize는 해당 함수 실행 직전에 실행된다. 함수 실행 직후에 실행되게 하려면 @PostAuthrize를 쓴다.
+	 *그리고 WebSecurityConfigurerAdapter를 상속 받은 클래스에서 @EnableGlobalMethodSecurity를 걸어줘야 한다.
+	 *
+	 * hasRole('ROLE_~~~')은 정해진 양식임
+	 * 아래 함수는 manager와 admin 권한만 접근 가능
+	 * */
+	@PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
+	@GetMapping("/data")
+	public @ResponseBody String data() {
+		return "데이터정보";
+	}
+	
 	
 	
 }

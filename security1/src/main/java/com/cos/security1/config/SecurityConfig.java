@@ -2,6 +2,8 @@ package com.cos.security1.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -10,6 +12,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Configuration
 //@EnableWebSecurity 이걸 쓰면 스프링 시큐리티 필터가 스프링의 필터 체인에 등록됨
 @EnableWebSecurity 
+/**
+//@EnableGlobalMethodSecurity의 securedEnabled는 @Secured 어노테이션을 활성화 시킨다.
+//@예) Secured("ROLE_ADMIN") 이렇게하면 ROLE_ADMIN 권한을 지닌 사람만 그 주소로 접근 할 수 있음.
+//prePostEnabled는 @preAuthorize 어노테이션을 활성화 시킨다.
+ * */
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	
 	@Bean	
