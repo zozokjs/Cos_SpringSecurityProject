@@ -1,5 +1,6 @@
 package com.cos.security1.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.annotation.Secured;
@@ -8,6 +9,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import com.cos.security1.oauth.PrincipalOauth2UserService;
 
 @Configuration
 //@EnableWebSecurity 이걸 쓰면 스프링 시큐리티 필터가 스프링의 필터 체인에 등록됨
@@ -20,14 +23,24 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	
-	@Bean	
+	
+	@Autowired
+	private PrincipalOauth2UserService principalOauth2UserService;
+	
+	
+	
 	//@Bean 해당 메소드의 리턴되는 오브젝트를 IOC에 등록해준다.
+	@Bean	
 	public BCryptPasswordEncoder encodePwd() {
 		return new BCryptPasswordEncoder();
 	}
 	
 	
-	
+	/**
+	 * oauth 인증되면 코드를 받고 이를 이용해 엑세스 토큰을 가져올 수 있는데 
+	 * 그걸 이용해 사용자 프로필 정보를 가져와서 곧바로 회원가입 시키거나 아니면 추가 정보를 받고 가입 시킴
+	 * 구글에서는 엑세스 토큰과 사용자 프로필 정보를 동시에 가져온다.
+	 * */
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		
@@ -44,7 +57,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 				.defaultSuccessUrl("/") //로그인 성공 시 이동하는 페이지
 				.and()
 				.oauth2Login()
-				.loginPage("/loginForm");
+				.loginPage("/loginForm")
+				.userInfoEndpoint()
+				.userService(principalOauth2UserService);
 		
 		
 	}
